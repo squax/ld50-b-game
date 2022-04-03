@@ -117,7 +117,7 @@ public class GameplayController : UnitySingleton<GameplayController>
         audioBG = GetComponent<AudioSource>();
         totalCollectables = totalTreeClusters * totalTreeClusters * totalFlowerClusters * 10;
 
-        GameObjectPoolManager.Instance.Register("Score", scoreItem, transform, 100);
+        GameObjectPoolManager.Instance.Register("Score", scoreItem, transform, 20);
 
         ChangeScreenState(GameState.Winter);
     }
