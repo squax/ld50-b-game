@@ -70,6 +70,9 @@ public class GameplayController : UnitySingleton<GameplayController>
     [SerializeField]
     private GameObject[] treePrefabs;
 
+    [SerializeField]
+    private GameObject scoreItem;
+
     [Header("World Generation")]
     [SerializeField]
     private float startingSpawnRadius = 2;
@@ -114,10 +117,12 @@ public class GameplayController : UnitySingleton<GameplayController>
         audioBG = GetComponent<AudioSource>();
         totalCollectables = totalTreeClusters * totalTreeClusters * totalFlowerClusters * 10;
 
+        GameObjectPoolManager.Instance.Register("Score", scoreItem, transform, 100);
+
         ChangeScreenState(GameState.Winter);
     }
 
-    public void AddHoneyCollected(int amount)
+    public void AddHoneyCollected(int amount, Vector3 position)
     {
         totalHoneyReserves += amount;
 
@@ -125,6 +130,26 @@ public class GameplayController : UnitySingleton<GameplayController>
 
         scoreLabel.transform.DOKill(true);
         scoreLabel.transform.DOPunchPosition(new Vector3(0, 0.08f, 0), 0.3f);
+
+        var scoreSpawn = GameObjectPoolManager.Instance.Spawn("Score", position + new Vector3(Random.Range(-0.16f, 0.16f), 0.32f, 0f), Quaternion.identity, true, 1.0f);
+
+        if(scoreSpawn != null)
+        {
+            scoreSpawn.transform.DOKill();
+            scoreSpawn.transform.localScale = Vector3.one;
+
+            scoreSpawn.transform.DOPunchScale(Vector3.one, 0.4f, 3, 0.3f).OnComplete(()=>
+            {
+                scoreSpawn.transform.DOScale(Vector3.zero, 0.3f).SetDelay(0.2f);
+            });
+
+            var tmp = scoreSpawn.GetComponent<TextMeshPro>();
+
+            if(tmp != null)
+            {
+                tmp.text = amount + "";
+            }
+        }
     }
 
     void BuildRandomWorld()

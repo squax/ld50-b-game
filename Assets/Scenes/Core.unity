@@ -488,6 +488,7 @@ MonoBehaviour:
   - {fileID: 1570840920304897566, guid: a5d00ad99bf3e8347adfa46fcc601b0f, type: 3}
   treePrefabs:
   - {fileID: 143795447668322726, guid: 406783dc93278ff4ab9ee4680048e82a, type: 3}
+  scoreItem: {fileID: 5233387194120829759, guid: 644683117fe479943bac9b539e552018, type: 3}
   startingSpawnRadius: 20
   totalTreeClusters: 12
   totalFlowerClusters: 6

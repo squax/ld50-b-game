@@ -18,7 +18,7 @@ public class NectarCollectable : MonoBehaviour
 
             --availableNectar;
 
-            GameplayController.Instance.AddHoneyCollected(1);
+            GameplayController.Instance.AddHoneyCollected(1, transform.position);
 
             if (availableNectar == 0)
             {
@@ -42,7 +42,7 @@ public class NectarCollectable : MonoBehaviour
 
                 --availableNectar;
 
-                GameplayController.Instance.AddHoneyCollected(1);
+                GameplayController.Instance.AddHoneyCollected(1, transform.position);
 
                 if (availableNectar == 0)
                 {
