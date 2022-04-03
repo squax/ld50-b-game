@@ -24,6 +24,8 @@ public class NectarCollectable : MonoBehaviour
             {
                 Destroy(gameObject);
             }
+
+            PlaySound();
         }
 
 
@@ -46,7 +48,14 @@ public class NectarCollectable : MonoBehaviour
                 {
                     Destroy(gameObject);
                 }
+
+                PlaySound();
             }
         }
+    }
+
+    private void PlaySound()
+    {
+        AudioManager.Instance.PlayOneShot("Collectable-" + Random.Range(0, 2), Random.value);
     }
 }

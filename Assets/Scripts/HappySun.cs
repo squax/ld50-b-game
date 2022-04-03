@@ -12,8 +12,10 @@ public class HappySun : MonoBehaviour
         {
             var workerBee = boid.View.GetComponent<WorkerBee>();
 
-            if (workerBee != null)
+            if (workerBee != null && workerBee.IsWet == true)
             {
+                AudioManager.Instance.PlayOneShot("Heal", Random.value);
+
                 workerBee.IsWet = false;
             }
         }

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameplayController : UnitySingleton<GameplayController>
 {
@@ -47,6 +48,12 @@ public class GameplayController : UnitySingleton<GameplayController>
     [SerializeField]
     private TextMeshProUGUI topLeftLabel;
 
+    [SerializeField]
+    private TextMeshProUGUI buttonLabel;
+
+    [SerializeField]
+    private Button button;
+
     [Header("Prefabs")]
     [SerializeField]
     private GameObject workerBeeBoidPrefab;
@@ -85,9 +92,17 @@ public class GameplayController : UnitySingleton<GameplayController>
     [SerializeField]
     private string[] randomBeeFacts;
 
+    [Header("Audio")]
+    [SerializeField]
+    private AudioClip winter;
+
+    [SerializeField]
+    private AudioClip summer;
+
     private GameObject dynamicLevelLayer;
     private List<Transform> collectables = new List<Transform>();
     private Transform closestCollectable = null;
+    private AudioSource audioBG;
 
     private int totalHoneyReserves = 0;
     private float timer = 60f;
@@ -96,6 +111,7 @@ public class GameplayController : UnitySingleton<GameplayController>
 
     void Start()
     {
+        audioBG = GetComponent<AudioSource>();
         totalCollectables = totalTreeClusters * totalTreeClusters * totalFlowerClusters * 10;
 
         ChangeScreenState(GameState.Winter);
@@ -249,6 +265,8 @@ public class GameplayController : UnitySingleton<GameplayController>
 
     public void Hibernate()
     {
+        AudioManager.Instance.PlayOneShot("Heal", 1f);
+
         ChangeScreenState(GameState.Summer);
     }
 
@@ -280,6 +298,12 @@ public class GameplayController : UnitySingleton<GameplayController>
 
         if (currentGameState == GameState.Summer)
         {
+            audioBG.clip = summer;
+            audioBG.Play();
+
+            infoHibernationLabel.text = "";
+            button.gameObject.SetActive(false);
+
             BuildRandomWorld();
 
             ++currentYear;
@@ -298,6 +322,16 @@ public class GameplayController : UnitySingleton<GameplayController>
 
         if (currentGameState == GameState.Winter)
         {
+            audioBG.clip = winter;
+            audioBG.Play();
+
+            button.gameObject.SetActive(true);
+            buttonLabel.text = "End Hibernation";
+
+            button.transform.DOKill(true);
+            button.transform.localRotation = Quaternion.identity;
+            button.transform.DOPunchRotation(new Vector3(0, 0, 2), 1.6f).SetDelay(2f).SetLoops(-1, LoopType.Yoyo);
+
             var text = "";
 
             if (currentYear < gameHelp.Length)
@@ -311,7 +345,7 @@ public class GameplayController : UnitySingleton<GameplayController>
 
             int requiredToSurvive = (totalCollectables / 10) + (currentYear * 100);
 
-            topLeftLabel.text = "<b>Year " + currentYear + "</b><br>" + totalHoneyReserves.ToString("#,##0") + " Honey in Storage.<br>Required to Survive: " + requiredToSurvive.ToString("#,##0");
+            topLeftLabel.text = "<b>Winter: Year " + currentYear + "</b><br><size=80%>" + totalHoneyReserves.ToString("#,##0") + " Honey in Storage.</size><br><size=60%>Required: " + requiredToSurvive.ToString("#,##0") + "</size>";
             topLeftLabel.color = Color.white;
 
             if (currentYear > 0)
@@ -339,11 +373,17 @@ public class GameplayController : UnitySingleton<GameplayController>
 
         if (currentGameState == GameState.GameOver)
         {
+            audioBG.clip = winter;
+            audioBG.Play();
+
+            buttonLabel.text = "Replay?";
+
             totalHoneyReserves = 0;
             currentYear = 0;
 
-            topLeftLabel.text = "You ran out of Honey.<br>The hive didn't survive the Winter.";
-            infoHibernationLabel.text = "<b>Game Over</b><br>Thanks for playing!";
+            topLeftLabel.text = "You ran out of Honey.<br><size=80%>The hive didn't survive the Winter.</size>";
+            infoHibernationLabel.text = "<b><size=150%>Game Over</size></b><br>Thanks for playing!<br><size=80%>Game Maker: <color=orange>@squaxcom</color></size>";
+            scoreLabel.text = "Hi B,<br>Follow Owl";
 
             titleScreen.SetActive(true);
 

@@ -23,6 +23,7 @@ public class AudioManager : UnitySingleton<AudioManager>
     private List<AudioBank> audioLibrary = new List<AudioBank>();
 
     private Dictionary<string, AudioClip> cache = new Dictionary<string, AudioClip>();
+    private Dictionary<string, float> lastPlayTime = new Dictionary<string, float>();
 
     private AudioSource audioSource;
 
@@ -58,6 +59,16 @@ public class AudioManager : UnitySingleton<AudioManager>
         {
             return;
         }
+
+        if(lastPlayTime.ContainsKey(id))
+        {
+            if((Time.realtimeSinceStartup - lastPlayTime[id]) < 0.1f)
+            {
+                return;
+            }
+        }
+
+        lastPlayTime[id] = Time.realtimeSinceStartup;
 
         var clip = cache[id];
 

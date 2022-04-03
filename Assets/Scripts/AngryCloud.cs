@@ -38,13 +38,15 @@ public class AngryCloud : MonoBehaviour
     {
         var queenBee = collider.gameObject.GetComponent<WorkerBee>();
 
-        if (queenBee != null)
+        if (queenBee != null && isSleeping == true)
         {
             angry.enabled = true;
             sleeping.enabled = false;
             isSleeping = false;
 
             sleepFor = 6f;
+
+            AudioManager.Instance.PlayOneShot("Cloud-Wakeup", 1.0f);
 
             return;
         }
@@ -57,10 +59,11 @@ public class AngryCloud : MonoBehaviour
             {
                 var workerBee = boid.View.GetComponent<WorkerBee>();
 
-                if (workerBee != null)
+                if (workerBee != null && workerBee.IsWet == false)
                 {
+                    AudioManager.Instance.PlayOneShot("Hurt", Random.value);
+
                     workerBee.IsWet = true;
-                    Debug.Log(collider.gameObject.name);
                 }
             }
         }
