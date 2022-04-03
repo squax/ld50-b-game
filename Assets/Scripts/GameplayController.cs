@@ -380,7 +380,7 @@ public class GameplayController : UnitySingleton<GameplayController>
 
             int requiredToSurvive = (totalCollectables / 10) + (currentYear * 100);
 
-            topLeftLabel.text = "<b>Winter: Year " + currentYear + "</b><br><size=80%>" + totalHoneyReserves.ToString("#,##0") + " Honey in Storage.</size><br><size=60%>Required: " + requiredToSurvive.ToString("#,##0") + "</size>";
+            topLeftLabel.text = "<b>Winter: Year " + currentYear + "</b><br><size=80%>" + totalHoneyReserves.ToString("#,##0") + " <color=yellow>Honey</color> in Storage.</size><br><size=60%>Required: <color=red>" + requiredToSurvive.ToString("#,##0") + "</color></size>";
             topLeftLabel.color = Color.white;
 
             if (currentYear > 0)
@@ -418,8 +418,8 @@ public class GameplayController : UnitySingleton<GameplayController>
             totalHoneyReserves = 0;
             currentYear = 0;
 
-            topLeftLabel.text = "You ran out of Honey.<br><size=80%>The hive didn't survive the Winter.</size>";
-            infoHibernationLabel.SetText("<b><size=150%>Game Over</size></b><br>Thanks for playing!<br><size=80%>Game Maker: <color=orange>@squaxcom</color></size>");
+            topLeftLabel.text = "You ran out of <color=yellow>Honey</color>.<br><size=80%>The hive didn't survive the Winter.</size>";
+            infoHibernationLabel.SetText("<b><size=150%>Game Over</size></b><br>Thanks for playing!<br><size=80%>Game Maker: <color=yellow>@squaxcom</color></size>");
             scoreLabel.text = "Hi B,<br>Follow Owl";
 
             titleScreen.SetActive(true);
