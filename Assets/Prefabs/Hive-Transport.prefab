@@ -100,9 +100,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Collect
+  m_text: 'Hello B,
 
-    Nectar'
+    Follow Owl'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f4e32607910f9ce4480127f7490cd6cd, type: 2}
   m_sharedMaterial: {fileID: -6448204143935832265, guid: f4e32607910f9ce4480127f7490cd6cd, type: 2}

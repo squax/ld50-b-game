@@ -43,7 +43,7 @@ public class GameplayController : UnitySingleton<GameplayController>
     private TextMeshPro scoreLabel;
 
     [SerializeField]
-    private TextMeshProUGUI infoHibernationLabel;
+    private TMPWobbleEffect infoHibernationLabel;
 
     [SerializeField]
     private TextMeshProUGUI topLeftLabel;
@@ -155,11 +155,19 @@ public class GameplayController : UnitySingleton<GameplayController>
             tree.transform.parent = dynamicLevelLayer.transform;
             tree.transform.position = position;
 
+            float arc = 360f / (float)totalFlowerClusters;
+            float angle = 0f;
             for (int i = 0; i < totalFlowerClusters; ++i)
             {
                 var flower = Instantiate(flowerPrefabs[Random.Range(0, flowerPrefabs.Length)]);
                 flower.transform.parent = tree.transform;
-                flower.transform.localPosition = Random.insideUnitCircle;
+                //flower.transform.localPosition = Random.insideUnitCircle;
+
+                var dir = new Vector2(Mathf.Sin(Mathf.Deg2Rad * angle), Mathf.Cos(Mathf.Deg2Rad * angle));
+
+                flower.transform.localPosition = dir;
+
+                angle += arc;
 
                 for (int y = 0; y < totalFlowerCollectables; ++y)
                 {
@@ -267,6 +275,8 @@ public class GameplayController : UnitySingleton<GameplayController>
     {
         AudioManager.Instance.PlayOneShot("Heal", 1f);
 
+        infoHibernationLabel.SetText("Loading..");
+
         ChangeScreenState(GameState.Summer);
     }
 
@@ -301,7 +311,7 @@ public class GameplayController : UnitySingleton<GameplayController>
             audioBG.clip = summer;
             audioBG.Play();
 
-            infoHibernationLabel.text = "";
+            infoHibernationLabel.SetText("");
             button.gameObject.SetActive(false);
 
             BuildRandomWorld();
@@ -359,9 +369,11 @@ public class GameplayController : UnitySingleton<GameplayController>
                 }
 
                 totalHoneyReserves -= requiredToSurvive;
+
+                scoreLabel.text = totalHoneyReserves.ToString("#,##0");
             }
 
-            infoHibernationLabel.text = text;
+            infoHibernationLabel.SetText(text);
 
             titleScreen.SetActive(true);
 
@@ -382,7 +394,7 @@ public class GameplayController : UnitySingleton<GameplayController>
             currentYear = 0;
 
             topLeftLabel.text = "You ran out of Honey.<br><size=80%>The hive didn't survive the Winter.</size>";
-            infoHibernationLabel.text = "<b><size=150%>Game Over</size></b><br>Thanks for playing!<br><size=80%>Game Maker: <color=orange>@squaxcom</color></size>";
+            infoHibernationLabel.SetText("<b><size=150%>Game Over</size></b><br>Thanks for playing!<br><size=80%>Game Maker: <color=orange>@squaxcom</color></size>");
             scoreLabel.text = "Hi B,<br>Follow Owl";
 
             titleScreen.SetActive(true);
