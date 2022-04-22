@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.U2D;
 using UnityEngine.UI;
 
 public class GameplayController : UnitySingleton<GameplayController>
@@ -73,6 +74,9 @@ public class GameplayController : UnitySingleton<GameplayController>
     [SerializeField]
     private GameObject scoreItem;
 
+    [SerializeField]
+    private GameObject flowerRadarIcon;
+
     [Header("World Generation")]
     [SerializeField]
     private float startingSpawnRadius = 2;
@@ -112,6 +116,11 @@ public class GameplayController : UnitySingleton<GameplayController>
     private int currentYear = 0;
     private int totalCollectables;
 
+    private List<Transform> flowRadar = new List<Transform>();
+    private List<Transform> flowRadarIcons = new List<Transform>();
+
+    private float targetPPU = 100f;
+
     void Start()
     {
         audioBG = GetComponent<AudioSource>();
@@ -120,6 +129,8 @@ public class GameplayController : UnitySingleton<GameplayController>
         GameObjectPoolManager.Instance.Register("Score", scoreItem, transform, 20);
 
         ChangeScreenState(GameState.Winter);
+
+        AudioManager.Instance.SFXVolume = 0.25f;
     }
 
     public void AddHoneyCollected(int amount, Vector3 position)
@@ -171,6 +182,10 @@ public class GameplayController : UnitySingleton<GameplayController>
 
         Vector2 lastTreePosition = Vector2.zero;
         collectables.Clear();
+        flowRadar.Clear();
+        flowRadarIcons.Clear();
+
+        queenBee.position = Vector3.zero;
 
         for (int n = 0; n < totalTreeClusters; ++n)
         {
@@ -179,6 +194,12 @@ public class GameplayController : UnitySingleton<GameplayController>
             var tree = Instantiate(treePrefabs[Random.Range(0, treePrefabs.Length)]);
             tree.transform.parent = dynamicLevelLayer.transform;
             tree.transform.position = position;
+
+            flowRadar.Add(tree.transform);
+
+            var radarIcon = Instantiate(flowerRadarIcon);
+            radarIcon.transform.parent = dynamicLevelLayer.transform;
+            flowRadarIcons.Add(radarIcon.transform);
 
             float arc = 360f / (float)totalFlowerClusters;
             float angle = 0f;
@@ -323,6 +344,26 @@ public class GameplayController : UnitySingleton<GameplayController>
 
         portableHive.position = Vector3.Lerp(portableHive.position, queenBee.position, Time.deltaTime);
         Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, new Vector3(queenBee.position.x, queenBee.position.y, Camera.main.transform.position.z), Time.deltaTime);
+
+        var camDelta = queenBee.position - Camera.main.transform.position;
+        camDelta.z = 0;
+        var distance = Mathf.Min((camDelta.magnitude / 1f), 1f);
+        var ppc = GetComponent<PixelPerfectCamera>();
+
+        targetPPU = 100 - (int)(distance * 50);
+
+        ppc.assetsPPU = (int)Mathf.Lerp((float)ppc.assetsPPU, targetPPU, Time.deltaTime * 2f);
+
+        int index = 0;
+        foreach(var child in flowRadar)
+        {
+            var delta = child.position - portableHive.position;
+
+            var trans = flowRadarIcons[index];
+
+            trans.position = portableHive.position + delta.normalized;
+            ++index;
+        }
     }
 
     private void ChangeScreenState(GameState newState)
@@ -330,6 +371,9 @@ public class GameplayController : UnitySingleton<GameplayController>
         if (currentGameState == newState) return;
 
         currentGameState = newState;
+
+        var ppc = Camera.main.GetComponent<PixelPerfectCamera>();
+        ppc.assetsPPU = 100;
 
         if (currentGameState == GameState.Summer)
         {
